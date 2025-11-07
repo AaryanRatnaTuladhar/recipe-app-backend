@@ -1,24 +1,25 @@
-// TypeScript file
-
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { recipes } from "./schema";
 
-// Database connection - update with your PostgreSQL credentials
+// Use environment variables for database connection
 const pool = new Pool({
-  host: "localhost",
+  host: process.env.DB_HOST || "production-db", // This will use your ${host::production-db}
   port: 5432,
-  user: "user",
-  password: "test1234",
-  database: "recipes",
+  user: process.env.POSTGRES_USER || "user",
+  password: process.env.POSTGRES_PASSWORD || "test1234",
+  database: process.env.POSTGRES_DB || "recipe",
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
-/*
-  host: "${ host:: production - db }",
-  DB_HOST = ${ host:: production - db }
-DB_TYPE = postgresql
-POSTGRES_USER = user
-POSTGRES_PASSWORD = test1234
-POSTGRES_DB = recipeData
-*/
+
+console.log('Database config:', {
+  host: process.env.DB_HOST,
+  port: 5432,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+});
+
 export const db = drizzle(pool);
 export { recipes };
