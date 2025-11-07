@@ -1,6 +1,7 @@
 // TypeScript file
 
 import { pgTable, serial, text, jsonb } from "drizzle-orm/pg-core";
+import { z } from "zod";
 
 export const recipes = pgTable("recipes", {
   id: serial("id", {mode: "number"}).primaryKey().notNull(),
