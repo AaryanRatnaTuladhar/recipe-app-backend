@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { db, recipes } from "../db/drizzle";
+import { db } from "../db/drizzle";
+import { recipes } from "../db/schema";
 import { eq, sql, desc } from "drizzle-orm";
 
 const router = new Hono();

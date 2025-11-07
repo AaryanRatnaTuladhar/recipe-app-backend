@@ -8,6 +8,3 @@ export const recipes = pgTable("recipes", {
   ingredients: jsonb("ingredients").$type<unknown>().notNull(),
   steps: jsonb("steps").$type<unknown>().notNull()
 });
-
-export type Recipe = typeof recipes.$inferSelect;
-export type NewRecipe = typeof recipes.$inferInsert

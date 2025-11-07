@@ -1,53 +1,44 @@
 import { Hono } from 'hono';
-import { db, recipes } from './db';
+import db  from './src/db/db';
+import { recipes } from './src/db/schema';
 import { eq, desc } from 'drizzle-orm';
+import { cors } from 'hono/cors';
 
 const app = new Hono();
-
+console.log("data base url",process.env.DATABASE_URL);
 // Enable CORS
-app.use('*', async (c, next) => {
-  c.header('Access-Control-Allow-Origin', '*');
-  c.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  c.header('Access-Control-Allow-Headers', 'Content-Type');
-  if (c.req.method === 'OPTIONS') {
-    return new Response(null, { status: 204 });
-  }
-  await next();
-});
+app.use('*', cors());
 
 // Get all recipes
 app.get('/recipes', async (c) => {
-  try {
-    const allRecipes = await db.select().from(recipes).orderBy(desc(recipes.created_at));
+  console.log("getting recipes");
+
+    const allRecipes = await db.select().from(recipes)
     return c.json(allRecipes);
-  } catch (error) {
-    console.error('Database error:', error);
-    return c.json({ error: 'Failed to fetch recipes' }, 500);
-  }
 });
 
-// Get single recipe
-app.get('/recipes/:id', async (c) => {
-  try {
-    const id = parseInt(c.req.param('id'));
-    const recipe = await db.select().from(recipes).where(eq(recipes.id, id)).limit(1);
+// // Get single recipe
+// app.get('/recipes/:id', async (c) => {
+//   try {
+//     const id = parseInt(c.req.param('id'));
+//     const recipe = await db.select().from(recipes).where(eq(recipes.id, id)).limit(1);
 
-    if (recipe.length === 0) {
-      return c.json({ error: 'Recipe not found' }, 404);
-    }
+//     if (recipe.length === 0) {
+//       return c.json({ error: 'Recipe not found' }, 404);
+//     }
 
-    return c.json(recipe[0]);
-  } catch (error) {
-    console.error('Database error:', error);
-    return c.json({ error: 'Failed to fetch recipe' }, 500);
-  }
-});
+//     return c.json(recipe[0]);
+//   } catch (error) {
+//     console.error('Database error:', error);
+//     return c.json({ error: 'Failed to fetch recipe' }, 500);
+//   }
+// });
 
 // Create recipe
 app.post('/recipes', async (c) => {
   try {
     const body = await c.req.json();
-
+    console.log("body",body);
     if (!body.title || !body.ingredients || !body.steps) {
       return c.json({ error: 'Missing required fields' }, 400);
     }
@@ -56,7 +47,7 @@ app.post('/recipes', async (c) => {
       title: body.title,
       ingredients: body.ingredients,
       steps: body.steps,
-    }).returning();
+    });
 
     return c.json(newRecipe[0], 201);
 
