@@ -59,51 +59,39 @@ app.post('/recipes', async (c) => {
 
 // Update recipe
 app.put('/recipes/:id', async (c) => {
-  try {
-    const id = parseInt(c.req.param('id'));
-    const body = await c.req.json();
+  const id = Number(c.req.param('id'));
+  const body = await c.req.json();
 
-    const updatedRecipe = await db.update(recipes)
-      .set({
-        title: body.title,
-        ingredients: body.ingredients,
-        steps: body.steps,
-        updated_at: new Date()
-      })
-      .where(eq(recipes.id, id))
-      .returning();
+  const updatedRecipe = await db.update(recipes)
+    .set({
+      title: body.title,
+      ingredients: body.ingredients,
+      steps: body.steps,
+    })
+    .where(eq(recipes.id, id));
 
-    if (updatedRecipe.length === 0) {
-      return c.json({ error: 'Recipe not found' }, 404);
-    }
-
-    return c.json(updatedRecipe[0]);
-
-  } catch (error) {
-    console.error('Database error:', error);
-    return c.json({ error: 'Failed to update recipe' }, 500);
+  if (updatedRecipe.length === 0) {
+    return c.json({ error: 'Recipe not found' }, 404);
   }
+
+  return c.json(updatedRecipe[0]);
 });
 
 // Delete recipe
-app.delete('/recipes/:id', async (c) => {
-  try {
-    const id = parseInt(c.req.param('id'));
+app.delete(`/recipes/:id`, async (c) => {
+  const id = Number(c.req.param('id'));
+  console.log('id', id)
 
-    const deletedRecipe = await db.delete(recipes)
-      .where(eq(recipes.id, id))
-      .returning();
 
-    if (deletedRecipe.length === 0) {
+  const result = await db.delete(recipes)
+    .where(eq(recipes.id, id));
+  
+
+    if (result.length === 0) {
       return c.json({ error: 'Recipe not found' }, 404);
     }
 
-    return c.json({ message: 'Recipe deleted successfully' });
-
-  } catch (error) {
-    console.error('Database error:', error);
-    return c.json({ error: 'Failed to delete recipe' }, 500);
-  }
+  return c.json({ message: 'Recipe deleted successfully' });
 });
 
 // Test route
