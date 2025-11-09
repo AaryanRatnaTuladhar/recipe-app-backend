@@ -9,3 +9,16 @@ export const recipes = pgTable("recipes", {
   ingredients: jsonb("ingredients").$type<unknown>().notNull(),
   steps: jsonb("steps").$type<unknown>().notNull()
 });
+
+export const user = pgTable("user", {
+  id: serial("id", {mode: "number"}).primaryKey().notNull(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  password: text("password").notNull()
+});
+
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+
+export type Recipe = typeof recipes.$inferSelect;
+export type NewRecipe = typeof recipes.$inferInsert;
