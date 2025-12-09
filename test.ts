@@ -1,2 +1,3 @@
 // TypeScript file
-test = 123;
+test1 = 123;
+test2 = 234;
