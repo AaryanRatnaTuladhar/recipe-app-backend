@@ -1,6 +1,6 @@
 import { sign } from 'hono/jwt';
 import { CookieOptions } from 'hono/utils/cookie';
-
+console.log('Hello World');
 export const generateToken = async(userId) => {
   const secret = process.env.JWT_SECRET;
   const now = Math.floor(Date.now() / 1000);
